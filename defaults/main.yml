@@ -88,7 +88,7 @@ resources_on_local:
     checksum      : 'md5:bd1655b4b313f7b2a1f2e15b7b925d03'
     resource_type : 'url'
 
-  resources_local_file_copy:
+  resources_local_file_copies:
 
     state : "copy" 
     src   : './files/example_playbook.yml'
@@ -97,13 +97,23 @@ resources_on_local:
     group : '{{ resources_controller_user }}'
     mode  : '0700'
 
-  resources_local_file_touch:
+  resources_local_file_touches:
 
     state : 'touch' 
     path  : '{{ resources_controller_resources_dir }}/copy_test.yml'
     owner : '{{ resources_controller_user }}'
     group : '{{ resources_controller_user }}'
     mode  : '0770'
+
+  resources_local_templated_files:
+
+
+    state: 'template'
+    src  : './templates/template_test.md.j2'
+    dest : '{{ resources_controller_resources_dir }}/test.md'
+    owner: '{{ resources_controller_user }}'
+    group: '{{ resources_controller_user }}'
+    mode : '0700'
 
 resources_on_remote:
 
@@ -133,7 +143,7 @@ resources_on_remote:
     checksum      : 'md5:bd1655b4b313f7b2a1f2e15b7b925d03'
     resource_type : 'url'
 
-  resources_remote_file_copy:
+  resources_remote_file_copies:
 
     state : "copy" 
     src   : './files/example_playbook.yml'
@@ -142,11 +152,20 @@ resources_on_remote:
     group : '{{ resources_deployment_user }}'
     mode  : '0700'
 
-  resources_remote_file_touch:
+  resources_remote_file_touches:
 
     state : 'touch' 
     path  : '{{ resources_deployment_resources_dir }}/copy_test.yml'
     owner : '{{ resources_deployment_user }}'
     group : '{{ resources_deployment_user }}'
     mode  : '0770'
+
+  resources_remote_templates_files:
+
+    state: 'template'
+    src  : './templates/template_test.md.j2'
+    dest : '{{ resources_deployment_resources_dir }}/test.md'
+    owner: '{{ resources_deployment_user }}'
+    group: '{{ resources_deployment_user }}'
+    mode : '0700'
 

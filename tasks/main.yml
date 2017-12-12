@@ -153,7 +153,7 @@
     path: "{{ item.value.path }}"
     state: "{{ item.value.state }}"
     owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
-    group: "{{ item.value.group | default(resoruces_default_remote_group) }}"
+    group: "{{ item.value.group | default(resources_default_remote_group) }}"
     mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
   with_dict: '{{ resources_on_remote }}'
   when: item.value.state is defined and item.value.state == 'touch'
@@ -167,8 +167,36 @@
     path: "{{ item.value.path }}"
     state: "{{ item.value.state }}"
     owner: "{{ item.value.owner | default(resources_default_local_owner) }}"
-    group: "{{ item.value.group | default(resoruces_default_local_group) }}"
+    group: "{{ item.value.group | default(resources_default_local_group) }}"
     mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'touch'
+
+## Template files to remote
+
+- name: "Template files to remote"
+  become: '{{ item.value.owner }}'
+  template:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+    group: "{{ item.value.group | default(resources_default_remote_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'template'
+
+## Template files to local
+
+- name: "Template files to local"
+  become: '{{ item.value.owner }}'
+  delegate_to: 127.0.0.1
+  template:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: "{{ item.value.owner | default(resources_default_local_owner) }}"
+    group: "{{ item.value.group | default(resources_default_local_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+  with_dict: '{{ resources_on_local }}'
+  when: item.value.state is defined and item.value.state == 'template'
+
 
