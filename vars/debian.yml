@@ -1,0 +1,4 @@
+--- # roles/resources/vars/debian.yml
+
+# Debian specific vars
+resources_package_extension: 'deb'

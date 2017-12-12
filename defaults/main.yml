@@ -1,0 +1,67 @@
+---
+# roles/resources/defaults/main.yml
+
+resources_debug : false
+
+resources_controller_user           : '{{ project_controller_user_name }}'
+resources_controller_home           : '{{ project_controller_user_home }}'
+resources_controller_resources_root : '{{ project_controller_resources_home }}'
+
+resources_deployment_user           : '{{ project_deployment_user_name }}'
+resources_deployment_home           : '{{ project_deployment_user_home }}'
+resources_deployment_resources_root : '{{ project_deployment_resources_home }}'
+
+## atomic versioning example
+#
+#resources_major             : '0'
+#resources_moderate_revision : '0'
+#resources_minor_revision    : '1'
+#resources_build             : ''
+
+## Package #
+
+resources_package_state    : 'present'
+resources_package_version  : '2.0.1'
+resources_package_filename : "vagrant_{{ resources_package_version }}_i686.deb"
+
+resources_controller_resources_dir : '{{ resources_controller_resources_home }}/vagrant/debs/'
+resources_deployment_resources_dir : '{{ resources_deployment_resources_home }}/vagrant/debs/'
+
+# Help file
+
+resources_acemenu_help_file_template_path: '/templates/bin/acemenu/help/example_aceadmin_helpfile.md.j2'
+
+# Resource URLs
+
+resources_package_url      : "https://releases.hashicorp.com/vagrant/2.0.1/vagrant_2.0.1_i686.deb"
+#resources_checksum_url     : "https://releases.hashicorp.com/vagrant/2.0.1/ vagrant_2.0.1_SHA256SUMS"
+#resources_checksum_sig_url : "https://releases.hashicorp.com/vagrant/2.0.1/ vagrant_2.0.1_SHA256SUMS.sig"
+
+# Directories
+resources_on_local:
+
+  resources_local_resources_dir:
+
+    state       : 'directory'
+    path        : '{{ resources_controller_resources_dir }}'
+    owner       : '{{ resources_controller_user }}'
+    group       : '{{ resources_controller_user }}'
+    mode        : '0755'
+
+resources_on_remote:
+
+  resources_remote_resource_dir:
+
+    state          : 'directory'
+    path           : '{{ resources_deployment_resources_dir }}'
+    owner          : '{{ resources_deployment_user }}'
+    group          : '{{ resources_deployment_user }}'
+    mode           : '0755'
+
+resources_skel_entries:
+
+  - name : "ensure for acemenu help file for resources"
+    src:  '{{ resources_acemenu_help_file_template_path }}'
+    path : '/etc/skel/bin/acemenu/help/resources.md'
+    force : no
+    state: 'copy'
