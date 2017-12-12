@@ -115,4 +115,60 @@
     checksum : '{{ item.value.checksum | default(omit) }}'
   with_dict: '{{ resources_on_local }}'
   when: item.value.resource_type is defined and item.value.resource_type == 'url'
-  
+
+# Ensure for copy of file on remote
+
+- name: 'Ensure for copy of file on remote'
+  become: '{{ item.value.owner }}'
+  copy:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+    group: "{{ item.value.group | default(resources_default_remote_group) }}"
+    mode : "{{ item.value.mode | default(resources_default_file_mode) }}"
+    force: "{{ item.value.force | default(resources_default_file_force) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'copy'
+
+# Ensure for copy of file on local
+
+- name: 'Ensure for copy of file on local'
+  become: '{{ item.value.owner }}'
+  delegate_to: 127.0.0.1
+  copy:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: "{{ item.value.owner | default(resources_default_local_owner) }}"
+    group: "{{ item.value.group | default(resources_default_local_group) }}"
+    mode : "{{ item.value.mode | default(resources_default_file_mode) }}"
+    force: "{{ item.value.force | default(resources_default_file_force) }}"
+  with_dict: '{{ resources_on_local }}'
+  when: item.value.state is defined and item.value.state == 'copy'
+
+# Ensure for touch of remote files
+
+- name: "Ensure touch to remote file(s)"
+  become: '{{ item.value.owner }}'
+  file:
+    path: "{{ item.value.path }}"
+    state: "{{ item.value.state }}"
+    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+    group: "{{ item.value.group | default(resoruces_default_remote_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'touch'
+
+# Ensure for touch of local files
+
+- name: "Ensure touch to remote file(s)"
+  become: '{{ item.value.owner }}'
+  delegate_to: 127.0.0.1
+  file:
+    path: "{{ item.value.path }}"
+    state: "{{ item.value.state }}"
+    owner: "{{ item.value.owner | default(resources_default_local_owner) }}"
+    group: "{{ item.value.group | default(resoruces_default_local_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+  with_dict: '{{ resources_on_local }}'
+  when: item.value.state is defined and item.value.state == 'touch'
+

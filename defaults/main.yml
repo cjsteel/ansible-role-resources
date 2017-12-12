@@ -11,22 +11,43 @@ resources_deployment_user           : '{{ project_deployment_user_name }}'
 resources_deployment_home           : '{{ project_deployment_user_home }}'
 resources_deployment_resources_root : '{{ project_deployment_resources_home }}'
 
-## atomic versioning example
-#
-#resources_major             : '0'
-#resources_moderate_revision : '0'
-#resources_minor_revision    : '1'
-#resources_build             : ''
+# defaults
+
+resources_default_file_force: yes
+resources_default_file_mode : 0700
+
+resources_default_local_owner: '{{ resources_controller_user }}'
+resources_default_local_group: '{{ resources_default_local_owner }}'
+
+resources_default_remote_owner: '{{ resources_deployment_user }}'
+resources_default_remote_group: '{{ resources_default_remote_owner }}'
+
+
+# directories
+
+resources_controller_resources_dir : '{{ resources_controller_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
+resources_deployment_resources_dir : '{{ resources_deployment_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
 
 # git repo clone defaults
 
 resources_default_clone: yes
 resources_default_clone_version: 'HEAD' #'0.0.1 # latest
 
-# directories
 
-resources_controller_resources_dir : '{{ resources_controller_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}'
-resources_deployment_resources_dir : '{{ resources_deployment_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}'
+# blockinfile
+
+resources_default_blockinfile_state: 'present'
+
+# links
+
+resources_default_force: yes
+
+resources_default_link_force: False
+resources_default_link_mode: '0640'
+resources_default_link_state: 'link'
+
+resources_default_relative_link_mode: '0640'
+
 
 # Help file
 
@@ -66,6 +87,24 @@ resources_on_local:
     mode          : '0700'
     checksum      : 'md5:bd1655b4b313f7b2a1f2e15b7b925d03'
     resource_type : 'url'
+
+  resources_local_file_copy:
+
+    state : "copy" 
+    src   : './files/example_playbook.yml'
+    dest  : '{{ resources_controller_resources_dir }}/copy_test.yml'
+    owner : '{{ resources_controller_user }}'
+    group : '{{ resources_controller_user }}'
+    mode  : '0700'
+
+  resources_local_file_touch:
+
+    state : 'touch' 
+    path  : '{{ resources_controller_resources_dir }}/copy_test.yml'
+    owner : '{{ resources_controller_user }}'
+    group : '{{ resources_controller_user }}'
+    mode  : '0770'
+
 resources_on_remote:
 
   resources_remote_directories:
@@ -93,4 +132,21 @@ resources_on_remote:
     mode          : '0700'
     checksum      : 'md5:bd1655b4b313f7b2a1f2e15b7b925d03'
     resource_type : 'url'
+
+  resources_remote_file_copy:
+
+    state : "copy" 
+    src   : './files/example_playbook.yml'
+    dest  : '{{ resources_deployment_resources_dir }}/copy_test.yml'
+    owner : '{{ resources_deployment_user }}'
+    group : '{{ resources_deployment_user }}'
+    mode  : '0700'
+
+  resources_remote_file_touch:
+
+    state : 'touch' 
+    path  : '{{ resources_deployment_resources_dir }}/copy_test.yml'
+    owner : '{{ resources_deployment_user }}'
+    group : '{{ resources_deployment_user }}'
+    mode  : '0770'
 
