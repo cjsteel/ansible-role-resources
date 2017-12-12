@@ -29,6 +29,7 @@
     mode    : '{{ item.value.mode    | default(ensure_dirs_default_remote_directory_mode) }}'
     recurse : '{{ item.value.recurse | default(omit) }}'
   with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'directory' or item.value.state is defined and item.value.state =='absent'
 
 
 # Ensure for resources on local system
@@ -47,3 +48,4 @@
     mode    : '{{ item.value.mode    | default(omit) }}'
     recurse : '{{ item.value.recurse | default(omit) }}'
   with_dict: '{{ resources_on_local }}'
+  when: item.value.state is defined and item.value.state == 'directory' or item.value.state is defined and item.value.state =='absent'
