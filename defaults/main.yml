@@ -36,7 +36,10 @@ resources_default_clone_version: 'HEAD' #'0.0.1 # latest
 
 # blockinfile
 
-resources_default_blockinfile_state: 'present'
+resources_default_blockinfile_state      : 'present'
+resources_default_blockinfile_marker     : '# <!-- {mark} ANSIBLE MANAGED BLOCK -->'
+resources_default_blockinfile_insertafter: "EOF" # or *regedit*, "<body>"
+
 
 # links
 
@@ -115,6 +118,26 @@ resources_on_local:
     group: '{{ resources_controller_user }}'
     mode : '0700'
 
+  resources_local_blocksinfile:
+
+    type: 'blockinfile'    
+    path: '{{ resources_controller_resources_dir }}/test.md'
+    owner: '{{ resources_controller_user }}'
+    group: '{{ resources_controller_user }}'
+    mode : '0700'
+    insertafter: "EOF"
+    block: |
+      # if running bash
+      if [ -n "$BASH_VERSION" ]; then
+          # include /opt/display/bin/display if it exists
+          if [ -f "/opt/display/bin/display" ]; then
+              PATH="/opt/display/bin:$PATH"
+
+       	. "/opt/display/bin/"
+          fi
+      fi
+    state: "present"
+
 resources_on_remote:
 
   resources_remote_directories:
@@ -168,4 +191,24 @@ resources_on_remote:
     owner: '{{ resources_deployment_user }}'
     group: '{{ resources_deployment_user }}'
     mode : '0700'
+
+  resources_remote_blocksinfile:
+
+    type: 'blockinfile'    
+    path: '{{ resources_deployment_resources_dir }}/test.md'
+    owner: '{{ resources_deployment_user }}'
+    group: '{{ resources_deployment_user }}'
+    mode : '0700'
+    insertafter: "EOF"
+    block: |
+      # if running bash
+      if [ -n "$BASH_VERSION" ]; then
+          # include /opt/display/bin/display if it exists
+          if [ -f "/opt/display/bin/display" ]; then
+              PATH="/opt/display/bin:$PATH"
+
+       	. "/opt/display/bin/"
+          fi
+      fi
+    state: "present"
 

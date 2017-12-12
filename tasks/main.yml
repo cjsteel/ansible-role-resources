@@ -199,4 +199,37 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'template'
 
+## Blockinfile in remote files
+
+- name: "Ensure for a block of text in a remote file"
+  become: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+  blockinfile:
+    destfile:  "{{ item.value.path }}"
+    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+    group: "{{ item.value.group | default(resources_default_remote_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+    marker: "{{ item.value.marker | default(resources_default_blockinfile_marker) }}"
+    insertafter: "{{ item.value.insertafter | default(none) }}"
+    block: "{{ item.value.block }}"
+    state: "{{ item.value.state  | default(resources_default_blockinfile_state) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.type is defined and item.value.type == 'blockinfile'
+
+## Blockinfile in local files
+
+- name: "Ensure for a block of text in a remote file"
+  become: "{{ item.value.owner | default(resources_default_local_owner) }}"
+  delegate_to: 127.0.0.1
+  blockinfile:
+    destfile:  "{{ item.value.path }}"
+    owner: "{{ item.value.owner | default(resources_default_local_owner) }}"
+    group: "{{ item.value.group | default(resources_default_local_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+    marker: "{{ item.marker | default(skel_default_blockinfile_marker) }}"
+    marker: "{{ item.value.marker | default(resources_default_blockinfile_marker) }}"
+    insertafter: "{{ item.value.insertafter | default(none) }}"
+    block: "{{ item.value.block }}"
+    state: "{{ item.value.state  | default(resources_default_blockinfile_state) }}"
+  with_dict: '{{ resources_on_local }}'
+  when: item.value.type is defined and item.value.type == 'blockinfile'
 
