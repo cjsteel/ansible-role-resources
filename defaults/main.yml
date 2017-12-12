@@ -18,14 +18,15 @@ resources_deployment_resources_root : '{{ project_deployment_resources_home }}'
 #resources_minor_revision    : '1'
 #resources_build             : ''
 
-## Package #
+# git repo clone defaults
 
-resources_package_state    : 'present'
-resources_package_version  : '2.0.1'
-resources_package_filename : "vagrant_{{ resources_package_version }}_i686.deb"
+resources_default_clone: yes
+resources_default_clone_version: 'HEAD' #'0.0.1 # latest
 
-resources_controller_resources_dir : '{{ resources_controller_resources_home }}/vagrant/debs/'
-resources_deployment_resources_dir : '{{ resources_deployment_resources_home }}/vagrant/debs/'
+# directories
+
+resources_controller_resources_dir : '{{ resources_controller_resources_home }}/vagrant/debs'
+resources_deployment_resources_dir : '{{ resources_deployment_resources_home }}/vagrant/debs'
 
 # Help file
 
@@ -40,23 +41,39 @@ resources_package_url      : "https://releases.hashicorp.com/vagrant/2.0.1/vagra
 # Directories
 resources_on_local:
 
-  resources_local_resources_dir:
+  resources_local_directories:
 
     state       : 'directory'
-    path        : '{{ resources_controller_resources_dir }}'
     owner       : '{{ resources_controller_user }}'
+    path        : '{{ resources_controller_resources_dir }}'
     group       : '{{ resources_controller_user }}'
     mode        : '0755'
 
+  resources_local_clones:
+
+    become: '{{ resources_controller_user }}'
+    repo  : 'https://github.com/cjsteel/script-bash-acemenu.git'
+    dest  : '{{ resources_controller_resources_dir }}/acemenu'
+    mode  : '0700'
+    clone : yes
+
 resources_on_remote:
 
-  resources_remote_resource_dir:
+  resources_remote_directories:
 
-    state          : 'directory'
-    path           : '{{ resources_deployment_resources_dir }}'
-    owner          : '{{ resources_deployment_user }}'
-    group          : '{{ resources_deployment_user }}'
-    mode           : '0755'
+    state : 'directory'
+    owner : '{{ resources_deployment_user }}'
+    path  : '{{ resources_deployment_resources_dir }}'
+    group : '{{ resources_deployment_user }}'
+    mode  : '0755'
+
+  resources_remote_clones:
+
+    become: true
+    repo  : 'https://github.com/cjsteel/script-bash-acemenu.git'
+    dest  : '/etc/skel/acemenu'
+    mode  : '0700'
+    clone : yes
 
 resources_skel_entries:
 

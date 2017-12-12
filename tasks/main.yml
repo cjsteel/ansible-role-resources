@@ -13,14 +13,23 @@
 - name: Run any OS specific tasks
   include: "{{ fact_role_path }}/tasks/{{ ansible_os_family | lower }}.yml"
 
-- name: "echo"
-  shell: echo '{{ item.value.state }}'
-  with_dict: '{{ resources_on_remote }}'
+# Debug remote resources
 
-# Ensure for resources on remote
+- name: "debug value of resources_on_remote"
+  debug: var=resources_on_remote
+
+# Debug local resources
+
+- name: "debug value of resources_on_local"
+  debug: var=resources_on_local
+
+# Ensure for remote and local resources
+
+## Ensure for directories on remote
 
 - name: "ensure for remote directories"
-  become: '{{ resources_deployment_user }}'
+  become: '{{ item.value.owner }}'
+#  become: '{{ resources_deployment_user }}'
   file:
     state   : '{{ item.value.state   | default("directory") }}'
     path    : '{{ item.value.path    | default(mandatory) }}'
@@ -32,13 +41,10 @@
   when: item.value.state is defined and item.value.state == 'directory' or item.value.state is defined and item.value.state =='absent'
 
 
-# Ensure for resources on local system
-
-- name: "echo"
-  shell: echo '{{ item.value.state }}'
-  with_dict: '{{ resources_on_local }}'
+## Ensure for directories on local
 
 - name: "ensure for local directories"
+  become: '{{ item.value.owner }}'
   delegate_to: 127.0.0.1
   file:
     state   : '{{ item.value.state   | default("directory") }}'
@@ -49,3 +55,34 @@
     recurse : '{{ item.value.recurse | default(omit) }}'
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'directory' or item.value.state is defined and item.value.state =='absent'
+
+## Ensure for clones on remote
+
+- name: "Manage remote git repository clones"
+  become: '{{ item.value.become }}'
+  git:
+    repo: "{{ item.value.repo }}"
+    dest: "{{ item.value.dest }}"
+    umask: '{{ item.value.umask  | default(omit) }}'
+    update: yes
+    clone: "{{ item.value.clone | default(resources_default_clone) }}"
+    version: "{{ item.value.version | default(resources_default_clone_version) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.clone is defined
+
+## Ensure for clones on local
+
+- name: "Manage git repository clones"
+  become: '{{ item.value.become }}'
+  delegate_to: 127.0.0.1
+  git:
+    repo: "{{ item.value.repo }}"
+    dest: "{{ item.value.dest }}"
+    umask: '{{ item.value.umask  | default(omit) }}'
+    update: yes
+    clone: "{{ item.value.clone | default(resources_default_clone) }}"
+    version: "{{ item.value.version | default(resources_default_clone_version) }}"
+  with_dict: '{{ resources_on_local }}'
+  when: item.value.clone is defined
+
+
