@@ -5,10 +5,10 @@
 # others
 
 *.log
-.private
-.prv
-.retry
+*.private
+*.prv
+*.retry
 vagrant.retry
-.vagrant
-.vault
-
+*.vagrant
+*.vault
+vault

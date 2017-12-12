@@ -72,7 +72,7 @@
 
 ## Ensure for clones on local
 
-- name: "Manage git repository clones"
+- name: "Manage local git repository clones"
   become: '{{ item.value.become }}'
   delegate_to: 127.0.0.1
   git:
@@ -85,4 +85,34 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.clone is defined
 
+## Ensure for downloads on remote
 
+- name: "Download file at url to remote"
+  become: '{{ item.value.owner }}'
+  get_url:
+    url: '{{ item.value.url }}'
+    dest: '{{ item.value.dest }}'
+    owner: '{{ item.value.owner | default(omit) }}'
+    group: '{{ item.value.group | default(omit) }}'
+    mode: '{{ item.value.mode  | default(omit) }}'
+    force: '{{ item.value.force  | default(omit) }}'
+    checksum : '{{ item.value.checksum | default(omit) }}'
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.resource_type is defined and item.value.resource_type == 'url'
+
+## Ensure for downloads on local
+
+- name: "Download file at url to local"
+  become: '{{ item.value.owner }}'
+  delegate_to: 127.0.0.1
+  get_url:
+    url: '{{ item.value.url }}'
+    dest: '{{ item.value.dest }}'
+    owner: '{{ item.value.owner | default(omit) }}'
+    group: '{{ item.value.group | default(omit) }}'
+    mode: '{{ item.value.mode  | default(omit) }}'
+    force: '{{ item.value.force  | default(omit) }}'
+    checksum : '{{ item.value.checksum | default(omit) }}'
+  with_dict: '{{ resources_on_local }}'
+  when: item.value.resource_type is defined and item.value.resource_type == 'url'
+  

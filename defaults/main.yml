@@ -25,8 +25,8 @@ resources_default_clone_version: 'HEAD' #'0.0.1 # latest
 
 # directories
 
-resources_controller_resources_dir : '{{ resources_controller_resources_home }}/vagrant/debs'
-resources_deployment_resources_dir : '{{ resources_deployment_resources_home }}/vagrant/debs'
+resources_controller_resources_dir : '{{ resources_controller_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}'
+resources_deployment_resources_dir : '{{ resources_deployment_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}'
 
 # Help file
 
@@ -57,6 +57,15 @@ resources_on_local:
     mode  : '0700'
     clone : yes
 
+  resources_local_downloads:
+
+    url           : 'https://repo.continuum.io/miniconda/Miniconda2-4.3.30-Linux-x86_64.sh'
+    dest          : '{{ resources_controller_resources_dir }}/Miniconda2-latest-Linux-x86_64.sh'
+    owner         : '{{ resources_controller_user }}'
+    group         : '{{ resources_controller_user }}'
+    mode          : '0700'
+    checksum      : 'md5:bd1655b4b313f7b2a1f2e15b7b925d03'
+    resource_type : 'url'
 resources_on_remote:
 
   resources_remote_directories:
@@ -75,10 +84,13 @@ resources_on_remote:
     mode  : '0700'
     clone : yes
 
-resources_skel_entries:
+  resources_remote_downloads:
 
-  - name : "ensure for acemenu help file for resources"
-    src:  '{{ resources_acemenu_help_file_template_path }}'
-    path : '/etc/skel/bin/acemenu/help/resources.md'
-    force : no
-    state: 'copy'
+    url           : 'https://repo.continuum.io/miniconda/Miniconda2-4.3.30-Linux-x86_64.sh'
+    dest          : '{{ resources_deployment_resources_dir }}/Miniconda2-latest-Linux-x86_64.sh'
+    owner         : '{{ resources_deployment_user }}'
+    group         : '{{ resources_deployment_user }}'
+    mode          : '0700'
+    checksum      : 'md5:bd1655b4b313f7b2a1f2e15b7b925d03'
+    resource_type : 'url'
+
