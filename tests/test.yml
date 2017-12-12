@@ -1,0 +1,69 @@
+---
+- hosts: all
+  become: true
+  gather_facts: false
+
+  pre_tasks:
+
+    - set_fact: fact_controller_user="{{ lookup('env','USER') }}"
+    - debug: var=fact_controller_user
+
+    - set_fact: fact_controller_home="{{ lookup('env','HOME') }}"
+    - debug: var=fact_controller_home
+
+    - set_fact: fact_role_path="{{ lookup('pipe','pwd')|dirname }}"
+    - debug: var=fact_role_path
+
+    - set_fact: ansible_user='ubuntu'
+    - name: "Ensure that our target has python2.x for Ansible gather facts (Sometimes Ubuntu 16.04 does not)"
+      raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python-minimal)"
+      register: output
+      changed_when:
+      - output.stdout != ""
+      - output.stdout != "\r\n"
+      ignore_errors: yes
+
+    - name: "Now that we are sure Python 2.7 is installed we can gather our facts"
+      setup:
+
+  roles:
+
+#    - epel
+    - { role: deployment_user }
+
+- hosts: all
+  become: false
+  gather_facts: true
+  vars:
+
+# project_vars usually from group_vars/all/defaults.yml repeated here as not inlcuded in tests
+
+## controller user vars
+
+    - project_controller_user_name      : '{{ fact_controller_user }}'
+    - project_controller_user_home      : '{{ fact_controller_home }}'
+    - project_controller_resources_home : '{{ project_controller_user_home }}'
+
+
+## deployment user vars
+
+    - project_deployment_user_name      : 'ubuntu'
+    - project_deployment_user_home      : '/home/{{ project_deployment_user_name }}'
+    - project_deployment_resources_home : '{{ project_deployment_user_home }}'
+
+# standard vars start here ####################################################
+
+    - resources_debug : 'true'
+
+    - resources_controller_user           : '{{ project_controller_user_name }}'
+    - resources_controller_home           : '{{ project_controller_user_home }}'
+    - resources_controller_resources_home : '{{ project_controller_resources_home }}'
+
+    - resources_deployment_user           : '{{ project_deployment_user_name }}'
+    - resources_deployment_home           : '{{ project_deployment_user_home }}'
+    - resources_deployment_resources_home : '{{ project_deployment_resources_home }}'
+
+  roles:
+
+    - resources
+
