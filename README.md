@@ -6,7 +6,7 @@
 
 ## Description
 
-resources is an Ansible role used to  
+ansoble-role-resources is an Ansible role that is used as a dependency. The role ensures for resources such as directories, files, links and downloads on local (controller) and remote systems.
 
 ## Recommended
 
@@ -17,45 +17,75 @@ Running Ansible in a virtual environment allows for a lot of testing flexibility
 ## Requirements
 
 * Ansible
+* ​
 
 ## Variables
 
-### project_name/resources.yml
-
-* [example_playbook.yml](files/example_playbook.yml)
-
-To install:
-
-```shell
-cd project_directory
-cp roles/resources/files/example_playbook.yml resources.yml
-# edit if required
-nano resources.yml
-```
-
-### project_name/site.yml
-
-* [example_resources.yml](files/example_site.yml)
-
-From the projects main directory run the following:
-
-```yaml
-cp roles/resources/files/example_playbook.yml resources.yml
-cat resources.yml
-```
-
 ### project/group_vars/all/project_defaults.yml
 
-[files/group_vars/all/example_defaults.yml](files/group_vars/all/example_defaults.yml)
+Example: [files/group_vars/all/example_defaults.yml](files/group_vars/all/example_defaults.yml)
+
+To install for this roles directory
 
 ```yaml
-cp roles/resources/files/group_vars/all/example_defaults.yml group_vars/all/project_defaults.yml
-cat group_vars/all/project_defaults.yml
+mkdir -P ../../group_vars/all
+cp files/group_vars/all/example_defaults.yml ../../group_vars/all/project_defaults.yml
+cat ../group_vars/all/project_defaults.yml
 ```
 
-## Testing
+### dependent_role/meta/main.yml
 
-Move into the role directory and run vagrant:
+Example of `dependent_role/meta/main.yml`
+
+```shell
+dependencies:
+
+  - role: resources
+    resources_on_local : '{{ dependent_role_resources_on_local }}'
+    resources_on_remote: '{{ dependent_role_resources_on_remote }}'
+```
+
+### dependent_role/defaults/main.yml
+
+The resources defined in the dependent roles `defaults/main.yml` are created by adding the containing variables, `dependent_role_resources_on_remote` and `dependent_role_resources_on_remote` in this example, to the dependent roles `meta/main.yml` file as illustrated in the above example.
+
+```shell
+---
+## dependent_role/defaults/main.yml
+#
+#
+dependent_role_remote_user: 'deploy'
+dependent_role_remote_resource_dir: '/etc/skel/bin'
+
+dependent_role_local_user: 'deploy'
+dependent_role_local_resource_dir: '{{ fact_controller_home }}/sw/example'
+
+dependent_role_resources_on_remote:
+
+  dependent_role_remote_directories:
+
+    state          : 'directory'
+    path           : '{{ dependent_role_remote_resource_dir }}'
+    owner          : '{{ dependent_role_remote_user }}'
+    group          : '{{ dependent_role_remote_user }}'
+    mode           : '0755'
+    recursive      : True
+
+dependent_role_resources_on_local:
+
+  dependent_role_local_directories:
+
+    state          : 'directory'
+    path           : '{{ dependent_role_local_resource_dir }}'
+    owner          : '{{ dependent_role_local_user }}'
+    group          : '{{ dependent_role_local_user }}'
+    mode           : '0755'
+    recursive      : True
+```
+
+## Testing the resources role
+
+Move into the roles directory and run `vagrant up`:
 
 ```shell
 cd roles/resources
