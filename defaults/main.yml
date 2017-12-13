@@ -13,20 +13,21 @@ resources_deployment_resources_root : '{{ project_deployment_resources_home }}'
 
 # defaults
 
-resources_default_file_force: yes
-resources_default_file_mode : 0700
+resources_default_file_force : yes
+resources_default_file_mode  : 0700
+resources_default_link_mode  : 0700
+resources_default_link_force : yes
 
-resources_default_local_owner: '{{ resources_controller_user }}'
-resources_default_local_group: '{{ resources_default_local_owner }}'
+resources_default_local_owner : '{{ resources_controller_user }}'
+resources_default_local_group : '{{ resources_default_local_owner }}'
 
 resources_default_remote_owner: '{{ resources_deployment_user }}'
 resources_default_remote_group: '{{ resources_default_remote_owner }}'
 
-
 # directories
 
-resources_controller_resources_dir : '{{ resources_controller_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
-resources_deployment_resources_dir : '{{ resources_deployment_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
+resources_controller_resources_dir: '{{ resources_controller_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
+resources_deployment_resources_dir: '{{ resources_deployment_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
 
 # git repo clone defaults
 
@@ -138,6 +139,27 @@ resources_on_local:
       fi
     state: "present"
 
+  resources_local_standard_sym_links:
+
+    state: "link"
+    src  : '{{ resources_controller_resources_dir }}/test.md'
+    dest : '{{ resources_controller_resources_dir }}/my_local_link'
+    owner: '{{ resources_controller_user }}'
+    group: '{{ resources_controller_user }}'
+    mode : '0700'
+    force: '{{ resources_default_link_force }}'
+
+  resources_local_relative_sym_links:
+
+    link_name   : 'relative_link'
+    link_target : 'test.md'
+    link_dir    : '/home/users/csteel/tests/sw/ubuntu/16.04/miniconda'
+    state: 'relative_link'
+#    owner: '{{ resources_controller_user }}'
+#    group: '{{ resources_controller_user }}'
+#    mode: '0700'
+
+
 resources_on_remote:
 
   resources_remote_directories:
@@ -211,4 +233,24 @@ resources_on_remote:
           fi
       fi
     state: "present"
+
+  resources_remote_standard_sym_links:
+
+    state: 'link'
+    src  : '{{ resources_deployment_resources_dir }}/test.md'
+    dest : '{{ resources_deployment_resources_dir }}/my_remote_link'
+    owner: '{{ resources_deployment_user }}'
+    group: '{{ resources_deployment_user }}'
+    mode : '0700'
+    force: '{{ resources_default_link_force }}'
+
+  resources_remote_relative_sym_links:
+
+    state       : 'relative_link'
+    link_dir    : '{{ resources_deployment_resources_dir }}'
+    link_name   : 'my_relative_link'
+    link_target : 'test.md'
+    owner       : '{{ resources_deployment_user }}'
+    group       : '{{ resources_deployment_user }}'
+    mode        : '0700'
 

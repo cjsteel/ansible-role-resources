@@ -233,3 +233,54 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.type is defined and item.value.type == 'blockinfile'
 
+## Standard remote symbolic links
+
+- name: "Manage remote standard symbolic links"
+  become: '{{ item.value.owner | default(resources_default_remote_owner) }}'
+  file:
+    src  : '{{ item.value.src }}'
+    dest : '{{ item.value.dest }}'
+    state: '{{ item.value.state }}'
+    owner: '{{ item.value.owner | default(resources_default_remote_owner) }}'
+    group: '{{ item.value.group | default(resources_default_remote_group) }}'
+    mode : '{{ item.value.mode | default(resources_default_link_mode) }}'
+    force: '{{ item.value.force | default(resources_default_link_force) }}'
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'link'
+
+## Standard local symbolic links
+
+- name: "Manage local standard symbolic link"
+  become: '{{ item.value.owner | default(resources_default_local_owner) }}'
+  delegate_to: 127.0.0.1
+  file:
+    src  : '{{ item.value.src }}'
+    dest : '{{ item.value.dest }}'
+    state: '{{ item.value.state }}'
+    owner: '{{ item.value.owner | default(resources_default_local_owner) }}'
+    group: '{{ item.value.group | default(resources_default_local_group) }}'
+    mode : '{{ item.value.mode | default(resources_default_link_mode) }}'
+    force: '{{ item.value.force | default(resources_default_link_force) }}'
+  with_dict: '{{ resources_on_local }}'
+  when: item.value.state is defined and item.value.state == 'link'
+
+## Relative remote symbolic links
+
+- name   : "Manage remote relative symbolic links"
+  become : '{{ item.value.owner | default(resources_default_remote_owner) }}'
+  command: 'ln -frs {{ item.value.link_target }} {{ item.value.link_name }}'
+  args:
+    chdir: '{{ item.value.link_dir }}'
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'relative_link'
+
+## Relative local symbolic links
+
+- name: "Manage local relative symbolic links"
+  become: '{{ item.value.owner | default(resources_default_local_owner) }}'
+  delegate_to: 127.0.0.1
+  command: 'ln -frs {{ item.value.link_target }} {{ item.value.link_name }}'
+  args:
+    chdir: '{{ item.value.link_dir }}'
+  with_dict: '{{ resources_on_local }}'
+  when: item.value.state is defined and item.value.state == 'relative_link'
