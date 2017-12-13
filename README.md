@@ -77,6 +77,6 @@ The Neuro has adopted the principles of Open Science. We are inspired by the lik
 
 ![neuro](imgs/mcin-neuro-logo.png)
 
-  
+
 
 * ansible-role-resources generated using [galaxy-role-skeleton](https://github.com/cjsteel/galaxy-role-skeleton)
