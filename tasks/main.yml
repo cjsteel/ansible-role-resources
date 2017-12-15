@@ -23,22 +23,7 @@
 - name: "debug value of resources_on_local"
   debug: var=resources_on_local
 
-# Ensure for remote and local resources
-
-## Ensure for directories on remote
-
-- name: "ensure for remote directories"
-  become: true
-  file:
-    state   : '{{ item.value.state   | default("directory") }}'
-    path    : '{{ item.value.path    | default(mandatory) }}'
-    owner   : '{{ item.value.owner   | default(ensure_dirs_default_remote_owner) }}'
-    group   : '{{ item.value.group   | default(ensure_dirs_default_remote_group) }}'
-    mode    : '{{ item.value.mode    | default(ensure_dirs_default_remote_directory_mode) }}'
-    recurse : '{{ item.value.recurse | default(omit) }}'
-  with_dict: '{{ resources_on_remote }}'
-  when: item.value.state is defined and item.value.state == 'directory' or item.value.state is defined and item.value.state =='absent'
-
+# Ensure for local resources
 
 ## Ensure for directories on local
 
@@ -55,20 +40,6 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'directory' or item.value.state is defined and item.value.state =='absent'
 
-## Ensure for clones on remote
-
-- name: "Manage remote git repository clones"
-  become: true
-  git:
-    repo: "{{ item.value.repo }}"
-    dest: "{{ item.value.dest }}"
-    umask: '{{ item.value.umask  | default(omit) }}'
-    update: yes
-    clone: "{{ item.value.clone }}"
-    version: "{{ item.value.version | default(omit) }}"
-  with_dict: '{{ resources_on_remote }}'
-  when: item.value.clone is defined
-
 ## Ensure for clones on local
 
 - name: "Manage local git repository clones"
@@ -83,21 +54,6 @@
     version: "{{ item.value.version | default(resources_default_clone_version) }}"
   with_dict: '{{ resources_on_local }}'
   when: item.value.clone is defined
-
-## Ensure for downloads on remote
-
-- name: "Download file at url to remote"
-  become: true
-  get_url:
-    url: '{{ item.value.url }}'
-    dest: '{{ item.value.dest }}'
-    owner: '{{ item.value.owner | default(omit) }}'
-    group: '{{ item.value.group | default(omit) }}'
-    mode: '{{ item.value.mode  | default(omit) }}'
-    force: '{{ item.value.force  | default(omit) }}'
-    checksum : '{{ item.value.checksum | default(omit) }}'
-  with_dict: '{{ resources_on_remote }}'
-  when: item.value.resource_type is defined and item.value.resource_type == 'url'
 
 ## Ensure for downloads on local
 
@@ -115,20 +71,6 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.resource_type is defined and item.value.resource_type == 'url'
 
-# Ensure for copy of file on remote
-
-- name: 'Ensure for copy of file on remote'
-  become: true
-  copy:
-    src: "{{ item.value.src }}"
-    dest: "{{ item.value.dest }}"
-    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
-    group: "{{ item.value.group | default(resources_default_remote_group) }}"
-    mode : "{{ item.value.mode | default(resources_default_file_mode) }}"
-    force: "{{ item.value.force | default(resources_default_file_force) }}"
-  with_dict: '{{ resources_on_remote }}'
-  when: item.value.state is defined and item.value.state == 'copy'
-
 # Ensure for copy of file on local
 
 - name: 'Ensure for copy of file on local'
@@ -144,19 +86,6 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'copy'
 
-# Ensure for touch of remote files
-
-- name: "Ensure touch to remote file(s)"
-  become: true
-  file:
-    path: "{{ item.value.path }}"
-    state: "{{ item.value.state }}"
-    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
-    group: "{{ item.value.group | default(resources_default_remote_group) }}"
-    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
-  with_dict: '{{ resources_on_remote }}'
-  when: item.value.state is defined and item.value.state == 'touch'
-
 # Ensure for touch of local files
 
 - name: "Ensure touch to remote file(s)"
@@ -171,19 +100,6 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'touch'
 
-## Template files to remote
-
-- name: "Template files to remote"
-  become: true
-  template:
-    src: "{{ item.value.src }}"
-    dest: "{{ item.value.dest }}"
-    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
-    group: "{{ item.value.group | default(resources_default_remote_group) }}"
-    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
-  with_dict: '{{ resources_on_remote }}'
-  when: item.value.state is defined and item.value.state == 'template'
-
 ## Template files to local
 
 - name: "Template files to local"
@@ -197,22 +113,6 @@
     mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'template'
-
-## Blockinfile in remote files
-
-- name: "Ensure for a block of text in a remote file"
-  become: true
-  blockinfile:
-    destfile:  "{{ item.value.path }}"
-    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
-    group: "{{ item.value.group | default(resources_default_remote_group) }}"
-    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
-    marker: "{{ item.value.marker | default(resources_default_blockinfile_marker) }}"
-    insertafter: "{{ item.value.insertafter | default(none) }}"
-    block: "{{ item.value.block }}"
-    state: "{{ item.value.state  | default(resources_default_blockinfile_state) }}"
-  with_dict: '{{ resources_on_remote }}'
-  when: item.value.type is defined and item.value.type == 'blockinfile'
 
 ## Blockinfile in local files
 
@@ -232,21 +132,6 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.type is defined and item.value.type == 'blockinfile'
 
-## Standard remote symbolic links
-
-- name: "Manage remote standard symbolic links"
-  become: true
-  file:
-    src  : '{{ item.value.src }}'
-    dest : '{{ item.value.dest }}'
-    state: '{{ item.value.state }}'
-    owner: '{{ item.value.owner | default(resources_default_remote_owner) }}'
-    group: '{{ item.value.group | default(resources_default_remote_group) }}'
-    mode : '{{ item.value.mode | default(resources_default_link_mode) }}'
-    force: '{{ item.value.force | default(resources_default_link_force) }}'
-  with_dict: '{{ resources_on_remote }}'
-  when: item.value.state is defined and item.value.state == 'link'
-
 ## Standard local symbolic links
 
 - name: "Manage local standard symbolic link"
@@ -263,16 +148,6 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'link'
 
-## Relative remote symbolic links
-
-- name   : "Manage remote relative symbolic links"
-  become: true
-  command: 'ln -frs {{ item.value.link_target }} {{ item.value.link_name }}'
-  args:
-    chdir: '{{ item.value.link_dir }}'
-  with_dict: '{{ resources_on_remote }}'
-  when: item.value.state is defined and item.value.state == 'relative_link'
-
 ## Relative local symbolic links
 
 - name: "Manage local relative symbolic links"
@@ -283,3 +158,130 @@
     chdir: '{{ item.value.link_dir }}'
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'relative_link'
+
+# Ensure for remote resources
+
+## Ensure for directories on remote
+
+- name: "ensure for remote directories"
+  become: true
+  file:
+    state   : '{{ item.value.state   | default("directory") }}'
+    path    : '{{ item.value.path    | default(mandatory) }}'
+    owner   : '{{ item.value.owner   | default(ensure_dirs_default_remote_owner) }}'
+    group   : '{{ item.value.group   | default(ensure_dirs_default_remote_group) }}'
+    mode    : '{{ item.value.mode    | default(ensure_dirs_default_remote_directory_mode) }}'
+    recurse : '{{ item.value.recurse | default(omit) }}'
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'directory' or item.value.state is defined and item.value.state =='absent'
+
+## Ensure for clones on remote
+
+- name: "Manage remote git repository clones"
+  become: true
+  git:
+    repo: "{{ item.value.repo }}"
+    dest: "{{ item.value.dest }}"
+    umask: '{{ item.value.umask  | default(omit) }}'
+    update: yes
+    clone: "{{ item.value.clone }}"
+    version: "{{ item.value.version | default(omit) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.clone is defined
+
+## Ensure for downloads on remote
+
+- name: "Download file at url to remote"
+  become: true
+  get_url:
+    url: '{{ item.value.url }}'
+    dest: '{{ item.value.dest }}'
+    owner: '{{ item.value.owner | default(omit) }}'
+    group: '{{ item.value.group | default(omit) }}'
+    mode: '{{ item.value.mode  | default(omit) }}'
+    force: '{{ item.value.force  | default(omit) }}'
+    checksum : '{{ item.value.checksum | default(omit) }}'
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.resource_type is defined and item.value.resource_type == 'url'
+
+# Ensure for copy of file on remote
+
+- name: 'Ensure for copy of file on remote'
+  become: true
+  copy:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+    group: "{{ item.value.group | default(resources_default_remote_group) }}"
+    mode : "{{ item.value.mode | default(resources_default_file_mode) }}"
+    force: "{{ item.value.force | default(resources_default_file_force) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'copy'
+
+# Ensure for touch of remote files
+
+- name: "Ensure touch to remote file(s)"
+  become: true
+  file:
+    path: "{{ item.value.path }}"
+    state: "{{ item.value.state }}"
+    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+    group: "{{ item.value.group | default(resources_default_remote_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'touch'
+
+## Template files to remote
+
+- name: "Template files to remote"
+  become: true
+  template:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+    group: "{{ item.value.group | default(resources_default_remote_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'template'
+
+## Blockinfile in remote files
+
+- name: "Ensure for a block of text in a remote file"
+  become: true
+  blockinfile:
+    destfile:  "{{ item.value.path }}"
+    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+    group: "{{ item.value.group | default(resources_default_remote_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+    marker: "{{ item.value.marker | default(resources_default_blockinfile_marker) }}"
+    insertafter: "{{ item.value.insertafter | default(none) }}"
+    block: "{{ item.value.block }}"
+    state: "{{ item.value.state  | default(resources_default_blockinfile_state) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.type is defined and item.value.type == 'blockinfile'
+
+## Standard remote symbolic links
+
+- name: "Manage remote standard symbolic links"
+  become: true
+  file:
+    src  : '{{ item.value.src }}'
+    dest : '{{ item.value.dest }}'
+    state: '{{ item.value.state }}'
+    owner: '{{ item.value.owner | default(resources_default_remote_owner) }}'
+    group: '{{ item.value.group | default(resources_default_remote_group) }}'
+    mode : '{{ item.value.mode | default(resources_default_link_mode) }}'
+    force: '{{ item.value.force | default(resources_default_link_force) }}'
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'link'
+
+## Relative remote symbolic links
+
+- name   : "Manage remote relative symbolic links"
+  become: true
+  command: 'ln -frs {{ item.value.link_target }} {{ item.value.link_name }}'
+  args:
+    chdir: '{{ item.value.link_dir }}'
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'relative_link'
+

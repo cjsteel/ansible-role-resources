@@ -3,13 +3,15 @@
 
 resources_debug : false
 
-resources_controller_user           : '{{ project_controller_user_name }}'
-resources_controller_home           : '{{ project_controller_user_home }}'
-resources_controller_resources_root : '{{ project_controller_resources_home }}'
+resources_controller_user           : '{{ project_controller_user }}'
+resources_controller_home           : '{{ project_controller_home }}'
+resources_controller_resources_home : '{{ project_controller_home }}\
+/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
 
-resources_deployment_user           : '{{ project_deployment_user_name }}'
-resources_deployment_home           : '{{ project_deployment_user_home }}'
-resources_deployment_resources_root : '{{ project_deployment_resources_home }}'
+resources_deployment_user           : '{{ project_deployment_user }}'
+resources_deployment_home           : '{{ project_deployment_home }}'
+resources_deployment_resources_home : '{{ project_deployment_home }}\
+/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
 
 # defaults
 
@@ -23,11 +25,6 @@ resources_default_local_group : '{{ resources_default_local_owner }}'
 
 resources_default_remote_owner: '{{ resources_deployment_user }}'
 resources_default_remote_group: '{{ resources_default_remote_owner }}'
-
-# directories
-
-resources_controller_resources_dir: '{{ resources_controller_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
-resources_deployment_resources_dir: '{{ resources_deployment_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
 
 # git repo clone defaults
 
@@ -55,7 +52,7 @@ resources_default_relative_link_mode: '0640'
 
 # Help file
 
-resources_acemenu_help_file_template_path: '/templates/bin/acemenu/help/example_aceadmin_helpfile.md.j2'
+resources_acemenu_help_file_template_home: '/templates/bin/acemenu/help/example_aceadmin_helpfile.md.j2'
 
 # Resource URLs
 
