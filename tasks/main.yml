@@ -28,8 +28,7 @@
 ## Ensure for directories on remote
 
 - name: "ensure for remote directories"
-  become: '{{ item.value.owner }}'
-#  become: '{{ resources_deployment_user }}'
+  become: true
   file:
     state   : '{{ item.value.state   | default("directory") }}'
     path    : '{{ item.value.path    | default(mandatory) }}'
@@ -44,7 +43,7 @@
 ## Ensure for directories on local
 
 - name: "ensure for local directories"
-  become: '{{ item.value.owner }}'
+  become: '{{ resources_controller_user }}'
   delegate_to: 127.0.0.1
   file:
     state   : '{{ item.value.state   | default("directory") }}'
@@ -59,21 +58,21 @@
 ## Ensure for clones on remote
 
 - name: "Manage remote git repository clones"
-  become: '{{ item.value.become }}'
+  become: true
   git:
     repo: "{{ item.value.repo }}"
     dest: "{{ item.value.dest }}"
     umask: '{{ item.value.umask  | default(omit) }}'
     update: yes
-    clone: "{{ item.value.clone | default(resources_default_clone) }}"
-    version: "{{ item.value.version | default(resources_default_clone_version) }}"
+    clone: "{{ item.value.clone }}"
+    version: "{{ item.value.version | default(omit) }}"
   with_dict: '{{ resources_on_remote }}'
   when: item.value.clone is defined
 
 ## Ensure for clones on local
 
 - name: "Manage local git repository clones"
-  become: '{{ item.value.become }}'
+  become: '{{ resources_controller_user }}'
   delegate_to: 127.0.0.1
   git:
     repo: "{{ item.value.repo }}"
@@ -88,7 +87,7 @@
 ## Ensure for downloads on remote
 
 - name: "Download file at url to remote"
-  become: '{{ item.value.owner }}'
+  become: true
   get_url:
     url: '{{ item.value.url }}'
     dest: '{{ item.value.dest }}'
@@ -103,7 +102,7 @@
 ## Ensure for downloads on local
 
 - name: "Download file at url to local"
-  become: '{{ item.value.owner }}'
+  become: '{{ resources_controller_user }}'
   delegate_to: 127.0.0.1
   get_url:
     url: '{{ item.value.url }}'
@@ -119,7 +118,7 @@
 # Ensure for copy of file on remote
 
 - name: 'Ensure for copy of file on remote'
-  become: '{{ item.value.owner }}'
+  become: true
   copy:
     src: "{{ item.value.src }}"
     dest: "{{ item.value.dest }}"
@@ -133,7 +132,7 @@
 # Ensure for copy of file on local
 
 - name: 'Ensure for copy of file on local'
-  become: '{{ item.value.owner }}'
+  become: '{{ resources_controller_user }}'
   delegate_to: 127.0.0.1
   copy:
     src: "{{ item.value.src }}"
@@ -148,7 +147,7 @@
 # Ensure for touch of remote files
 
 - name: "Ensure touch to remote file(s)"
-  become: '{{ item.value.owner }}'
+  become: true
   file:
     path: "{{ item.value.path }}"
     state: "{{ item.value.state }}"
@@ -161,7 +160,7 @@
 # Ensure for touch of local files
 
 - name: "Ensure touch to remote file(s)"
-  become: '{{ item.value.owner }}'
+  become: '{{ resources_controller_user }}'
   delegate_to: 127.0.0.1
   file:
     path: "{{ item.value.path }}"
@@ -175,7 +174,7 @@
 ## Template files to remote
 
 - name: "Template files to remote"
-  become: '{{ item.value.owner }}'
+  become: true
   template:
     src: "{{ item.value.src }}"
     dest: "{{ item.value.dest }}"
@@ -188,7 +187,7 @@
 ## Template files to local
 
 - name: "Template files to local"
-  become: '{{ item.value.owner }}'
+  become: '{{ resources_controller_user }}'
   delegate_to: 127.0.0.1
   template:
     src: "{{ item.value.src }}"
@@ -202,7 +201,7 @@
 ## Blockinfile in remote files
 
 - name: "Ensure for a block of text in a remote file"
-  become: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+  become: true
   blockinfile:
     destfile:  "{{ item.value.path }}"
     owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
@@ -218,7 +217,7 @@
 ## Blockinfile in local files
 
 - name: "Ensure for a block of text in a remote file"
-  become: "{{ item.value.owner | default(resources_default_local_owner) }}"
+  become: '{{ resources_controller_user }}'
   delegate_to: 127.0.0.1
   blockinfile:
     destfile:  "{{ item.value.path }}"
@@ -236,7 +235,7 @@
 ## Standard remote symbolic links
 
 - name: "Manage remote standard symbolic links"
-  become: '{{ item.value.owner | default(resources_default_remote_owner) }}'
+  become: true
   file:
     src  : '{{ item.value.src }}'
     dest : '{{ item.value.dest }}'
@@ -251,7 +250,7 @@
 ## Standard local symbolic links
 
 - name: "Manage local standard symbolic link"
-  become: '{{ item.value.owner | default(resources_default_local_owner) }}'
+  become: '{{ resources_controller_user }}'
   delegate_to: 127.0.0.1
   file:
     src  : '{{ item.value.src }}'
@@ -267,7 +266,7 @@
 ## Relative remote symbolic links
 
 - name   : "Manage remote relative symbolic links"
-  become : '{{ item.value.owner | default(resources_default_remote_owner) }}'
+  become: true
   command: 'ln -frs {{ item.value.link_target }} {{ item.value.link_name }}'
   args:
     chdir: '{{ item.value.link_dir }}'
@@ -277,7 +276,7 @@
 ## Relative local symbolic links
 
 - name: "Manage local relative symbolic links"
-  become: '{{ item.value.owner | default(resources_default_local_owner) }}'
+  become: '{{ resources_controller_user }}'
   delegate_to: 127.0.0.1
   command: 'ln -frs {{ item.value.link_target }} {{ item.value.link_name }}'
   args:

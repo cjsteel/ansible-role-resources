@@ -3,13 +3,15 @@
 
 resources_debug : false
 
-resources_controller_user           : '{{ project_controller_user_name }}'
-resources_controller_home           : '{{ project_controller_user_home }}'
-resources_controller_resources_root : '{{ project_controller_resources_home }}'
+resources_controller_user           : '{{ project_controller_user }}'
+resources_controller_home           : '{{ project_controller_home }}'
+resources_controller_resources_home : '{{ project_controller_home }}\
+/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
 
-resources_deployment_user           : '{{ project_deployment_user_name }}'
-resources_deployment_home           : '{{ project_deployment_user_home }}'
-resources_deployment_resources_root : '{{ project_deployment_resources_home }}'
+resources_deployment_user           : '{{ project_deployment_user }}'
+resources_deployment_home           : '{{ project_deployment_home }}'
+resources_deployment_resources_home : '{{ project_deployment_home }}\
+/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
 
 # defaults
 
@@ -23,11 +25,6 @@ resources_default_local_group : '{{ resources_default_local_owner }}'
 
 resources_default_remote_owner: '{{ resources_deployment_user }}'
 resources_default_remote_group: '{{ resources_default_remote_owner }}'
-
-# directories
-
-resources_controller_resources_dir: '{{ resources_controller_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
-resources_deployment_resources_dir: '{{ resources_deployment_resources_home }}/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
 
 # git repo clone defaults
 
@@ -55,7 +52,7 @@ resources_default_relative_link_mode: '0640'
 
 # Help file
 
-resources_acemenu_help_file_template_path: '/templates/bin/acemenu/help/example_aceadmin_helpfile.md.j2'
+resources_acemenu_help_file_template_home: '/templates/bin/acemenu/help/example_aceadmin_helpfile.md.j2'
 
 # Resource URLs
 
@@ -64,193 +61,6 @@ resources_package_url      : "https://releases.hashicorp.com/vagrant/2.0.1/vagra
 #resources_checksum_sig_url : "https://releases.hashicorp.com/vagrant/2.0.1/ vagrant_2.0.1_SHA256SUMS.sig"
 
 # Directories
-resources_on_local:
-
-  resources_local_directories:
-
-    state       : 'directory'
-    owner       : '{{ resources_controller_user }}'
-    path        : '{{ resources_controller_resources_dir }}'
-    group       : '{{ resources_controller_user }}'
-    mode        : '0755'
-
-  resources_local_clones:
-
-    become: '{{ resources_controller_user }}'
-    repo  : 'https://github.com/cjsteel/script-bash-acemenu.git'
-    dest  : '{{ resources_controller_resources_dir }}/acemenu'
-    mode  : '0700'
-    clone : yes
-
-  resources_local_downloads:
-
-    url           : 'https://repo.continuum.io/miniconda/Miniconda2-4.3.30-Linux-x86_64.sh'
-    dest          : '{{ resources_controller_resources_dir }}/Miniconda2-latest-Linux-x86_64.sh'
-    owner         : '{{ resources_controller_user }}'
-    group         : '{{ resources_controller_user }}'
-    mode          : '0700'
-    checksum      : 'md5:bd1655b4b313f7b2a1f2e15b7b925d03'
-    resource_type : 'url'
-
-  resources_local_file_copies:
-
-    state : "copy" 
-    src   : './files/example_playbook.yml'
-    dest  : '{{ resources_controller_resources_dir }}/copy_test.yml'
-    owner : '{{ resources_controller_user }}'
-    group : '{{ resources_controller_user }}'
-    mode  : '0700'
-
-  resources_local_file_touches:
-
-    state : 'touch' 
-    path  : '{{ resources_controller_resources_dir }}/copy_test.yml'
-    owner : '{{ resources_controller_user }}'
-    group : '{{ resources_controller_user }}'
-    mode  : '0770'
-
-  resources_local_templated_files:
-
-
-    state: 'template'
-    src  : './templates/template_test.md.j2'
-    dest : '{{ resources_controller_resources_dir }}/test.md'
-    owner: '{{ resources_controller_user }}'
-    group: '{{ resources_controller_user }}'
-    mode : '0700'
-
-  resources_local_blocksinfile:
-
-    type: 'blockinfile'    
-    path: '{{ resources_controller_resources_dir }}/test.md'
-    owner: '{{ resources_controller_user }}'
-    group: '{{ resources_controller_user }}'
-    mode : '0700'
-    insertafter: "EOF"
-    block: |
-      # if running bash
-      if [ -n "$BASH_VERSION" ]; then
-          # include /opt/display/bin/display if it exists
-          if [ -f "/opt/display/bin/display" ]; then
-              PATH="/opt/display/bin:$PATH"
-
-       	. "/opt/display/bin/"
-          fi
-      fi
-    state: "present"
-
-  resources_local_standard_sym_links:
-
-    state: "link"
-    src  : '{{ resources_controller_resources_dir }}/test.md'
-    dest : '{{ resources_controller_resources_dir }}/my_local_link'
-    owner: '{{ resources_controller_user }}'
-    group: '{{ resources_controller_user }}'
-    mode : '0700'
-    force: '{{ resources_default_link_force }}'
-
-  resources_local_relative_sym_links:
-
-    link_name   : 'relative_link'
-    link_target : 'test.md'
-    link_dir    : '/home/users/csteel/tests/sw/ubuntu/16.04/miniconda'
-    state: 'relative_link'
-#    owner: '{{ resources_controller_user }}'
-#    group: '{{ resources_controller_user }}'
-#    mode: '0700'
-
-
-resources_on_remote:
-
-  resources_remote_directories:
-
-    state : 'directory'
-    owner : '{{ resources_deployment_user }}'
-    path  : '{{ resources_deployment_resources_dir }}'
-    group : '{{ resources_deployment_user }}'
-    mode  : '0755'
-
-  resources_remote_clones:
-
-    become: true
-    repo  : 'https://github.com/cjsteel/script-bash-acemenu.git'
-    dest  : '/etc/skel/acemenu'
-    mode  : '0700'
-    clone : yes
-
-  resources_remote_downloads:
-
-    url           : 'https://repo.continuum.io/miniconda/Miniconda2-4.3.30-Linux-x86_64.sh'
-    dest          : '{{ resources_deployment_resources_dir }}/Miniconda2-latest-Linux-x86_64.sh'
-    owner         : '{{ resources_deployment_user }}'
-    group         : '{{ resources_deployment_user }}'
-    mode          : '0700'
-    checksum      : 'md5:bd1655b4b313f7b2a1f2e15b7b925d03'
-    resource_type : 'url'
-
-  resources_remote_file_copies:
-
-    state : "copy" 
-    src   : './files/example_playbook.yml'
-    dest  : '{{ resources_deployment_resources_dir }}/copy_test.yml'
-    owner : '{{ resources_deployment_user }}'
-    group : '{{ resources_deployment_user }}'
-    mode  : '0700'
-
-  resources_remote_file_touches:
-
-    state : 'touch' 
-    path  : '{{ resources_deployment_resources_dir }}/copy_test.yml'
-    owner : '{{ resources_deployment_user }}'
-    group : '{{ resources_deployment_user }}'
-    mode  : '0770'
-
-  resources_remote_templates_files:
-
-    state: 'template'
-    src  : './templates/template_test.md.j2'
-    dest : '{{ resources_deployment_resources_dir }}/test.md'
-    owner: '{{ resources_deployment_user }}'
-    group: '{{ resources_deployment_user }}'
-    mode : '0700'
-
-  resources_remote_blocksinfile:
-
-    type: 'blockinfile'    
-    path: '{{ resources_deployment_resources_dir }}/test.md'
-    owner: '{{ resources_deployment_user }}'
-    group: '{{ resources_deployment_user }}'
-    mode : '0700'
-    insertafter: "EOF"
-    block: |
-      # if running bash
-      if [ -n "$BASH_VERSION" ]; then
-          # include /opt/display/bin/display if it exists
-          if [ -f "/opt/display/bin/display" ]; then
-              PATH="/opt/display/bin:$PATH"
-
-       	. "/opt/display/bin/"
-          fi
-      fi
-    state: "present"
-
-  resources_remote_standard_sym_links:
-
-    state: 'link'
-    src  : '{{ resources_deployment_resources_dir }}/test.md'
-    dest : '{{ resources_deployment_resources_dir }}/my_remote_link'
-    owner: '{{ resources_deployment_user }}'
-    group: '{{ resources_deployment_user }}'
-    mode : '0700'
-    force: '{{ resources_default_link_force }}'
-
-  resources_remote_relative_sym_links:
-
-    state       : 'relative_link'
-    link_dir    : '{{ resources_deployment_resources_dir }}'
-    link_name   : 'my_relative_link'
-    link_target : 'test.md'
-    owner       : '{{ resources_deployment_user }}'
-    group       : '{{ resources_deployment_user }}'
-    mode        : '0700'
+resources_on_local: []
+resources_on_remote: []
 
