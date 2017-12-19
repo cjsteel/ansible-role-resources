@@ -66,8 +66,8 @@
 
 ## Directories
 
-    - resources_controller_resources_root : '{{ resources_controller_home }}/test/src/sw'
-    - resources_deployment_resources_root : '{{ resources_deployment_home }}/test/src/sw'
+    - resources_controller_resources_root : '{{ resources_controller_home }}/local_tests/src/sw'
+    - resources_deployment_resources_root : '{{ resources_deployment_home }}/remote_tests/src/sw'
 
 ## Clones
 
