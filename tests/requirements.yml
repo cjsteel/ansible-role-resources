@@ -1,4 +1,2 @@
-# from GitHub, overriding the name and specifying a specific tag
-- src: https://github.com/cjsteel/ansible-role-resources
-  version: master
-  name: cjsteel.resources
+# Install from galaxy
+- src: cjsteel.resources
