@@ -1,9 +1,8 @@
 # roles/resources/README.md
 
-[![Build Status](https://travis-ci.org/cjsteel/resources.svg?branch=master)](https://travis-ci.org/cjsteel/resources)
-[![Travis CI](http://img.shields.io/travis/csteel/resources/default.svg?style=flat)](http://travis-ci.org/csteel/resources/default)
-[![Platforms](http://img.shields.io/badge/platforms-debian%20/%20ubuntu-lightgrey.svg?style=flat)](#)
-https://img.shields.io/ansible/role/3078.svg
+![Build Status](https://travis-ci.org/cjsteel/ansible-role-resources.svg?branch=master)](https://travis-ci.org/cjsteel/ansible-role-resources)
+
+
 ## Description
 
 ansoble-role-resources is an Ansible role that is used as a dependency. The role ensures for resources such as directories, clones, files, links and url downloads on the local (controller) system as well as remote systems.
