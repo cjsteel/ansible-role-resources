@@ -154,11 +154,10 @@ License: [MIT](https://tldrlegal.com/license/mit-license)
 
 The Neuro has adopted the principles of Open Science. We are inspired by the likes of the Allen Institute for Brain Science, the National Institutes of Health's Human Connectome project, and the Human Genome project. For additional information, please see [Open Science at the Neuro](https://www.mcgill.ca/neuro/open-science-0).
 
+<span style="display:block;text-align:center">![Neuro](imgs/mcin-neuro-logo.png)</span>
+
 <p align="center"> 
-  <img src="imgs/mcin-neuro.png" alt="MCIN and NEURO Logos"/>
+  <img src="imgs/mcin-neuro-logo.png">
 </p>
-
-
-
 
 * ansible-role-resources generated using [galaxy-role-skeleton](https://github.com/cjsteel/galaxy-role-skeleton)
