@@ -6,12 +6,12 @@ resources_debug : false
 resources_controller_user           : '{{ project_controller_user }}'
 resources_controller_home           : '{{ project_controller_home }}'
 resources_controller_resources_home : '{{ project_controller_home }}\
-/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
+/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}'
 
 resources_deployment_user           : '{{ project_deployment_user }}'
 resources_deployment_home           : '{{ project_deployment_home }}'
 resources_deployment_resources_home : '{{ project_deployment_home }}\
-/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}/miniconda'
+/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}'
 
 # defaults
 
