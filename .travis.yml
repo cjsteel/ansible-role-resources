@@ -45,7 +45,7 @@ script:
   - >
     ansible-playbook -i tests/inventory tests/travis.yml
     --connection=local --become
-    | grep -q 'changed=[0].*failed=0'
+    | grep -q '*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)  
 
