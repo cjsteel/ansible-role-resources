@@ -1,7 +1,5 @@
----
-## project/site.yml
-#
-#
+--- # project/site.yml
+
 - hosts: all
   become: false
   gather_facts: true
@@ -17,7 +15,7 @@
     - debug: var=fact_project_path
 
 
-- include: some_dependent_role.yml
+- include: csteel.myrepos.yml
 
 
 

@@ -1,11 +1,11 @@
 # roles/resources/README.md
 
-![Build Status](https://travis-ci.org/cjsteel/ansible-role-resources.svg?branch=master)](https://travis-ci.org/cjsteel/ansible-role-resources)
+![Build Status](https://travis-ci.org/cjsteel/ansible-role-resources.svg?branch=master)
 
 
 ## Description
 
-ansoble-role-resources is an Ansible role that is used as a dependency. The role ensures for resources such as directories, clones, files, links and url downloads on the local (controller) system as well as remote systems.
+ansible-role-resources is an Ansible role that is used as a dependency. The role ensures for resources such as directories, clones, files, links and url downloads on the local (controller) system as well as remote systems.
 
 ## Recommendations
 
@@ -36,49 +36,21 @@ cat ../group_vars/all/project_defaults.yml
 
 ## dependent roles playbook(s)
 
-Our setup uses multiple **set_fact** commands in our main playbook to set the values for **fact_controller_user**, **fact_controller_home** and **fact_project_path** which are used by the projects `group_vars/all/project_defaults.yml` referred to in the above section. Our `site.yml` file includes a section like the following as well as a reference the the dependent role as follows:
+Our setup uses multiple **set_fact** commands in our main (site.yml) playbook to set values for the variables **fact_controller_user**, **fact_controller_home** and **fact_project_path**. These variables are used by the projects `group_vars/all/project_defaults.yml` file (referred to in the above section.) The  **site.yml** file must also contain one or more includes for each role used in the project.
 
-```shell
---- # site.yml example
+This example at the link below includes a single role, **csteel.myrepos**, as an example:
 
-- hosts: all
-  become: false
-  gather_facts: true
-  pre_tasks:
-
-    - set_fact: fact_controller_user="{{ lookup('env','USER') }}"
-    - debug: var=fact_controller_user
-
-    - set_fact: fact_controller_home="{{ lookup('env','HOME') }}"
-    - debug: var=fact_controller_home
-
-    - set_fact: fact_project_path="{{ lookup('pipe','pwd') }}"
-    - debug: var=fact_project_path
-
-- include: cjsteel.myrepos.yml
-```
+[files/example_site.yml](files/example_site.yml)
 
 ### The dependent roles playbook
 
-The the dependent roles playbook we set variable for the roles directory that can be passed to the resources role in order to allow the resource role to find files located in the depended roles directory structure:
+The playbook referred to via the example **site.yml** file in our lab runs **set_fact** one more time in ordr to capture the roles directory which allows us to pass the value of the dependent roles directory to the **resources** role so that it in turn is able to find files and templates in our dependent roles directory structure.
 
-```shell
---- # file: myrepos.yml
+The example here is for the role playbook for the **myrepos** role:
 
-- hosts: myrepos
-  become: true
-  gather_facts: true 
-  pre_tasks:
+[files/example_myrepos.yml](files/example_myrepos.yml)
 
-    - set_fact: fact_role_path="{{ lookup('pipe','pwd') }}/roles/csteel.myrepos"
-    - debug: var=fact_role_path
-
-  roles:
-
-    - csteel.myrepos
-```
-
-During testing this accomplished by defining the roles directory in tests/test.yml
+Note: When testing the **resources** role this is accomplished using the tests/vagrant.yml file for vagrant tests or the tests/travis.yml file for automated travis testing.
 
 ### The dependent roles /meta/main.yml file
 
@@ -97,7 +69,9 @@ dependencies:
 
 ### dependent_roles/defaults/main.yml
 
-The contents of **myrepos_resources_on_local** and **myrepos_resources_on_remote** are defined in the dependent roles **`defaults/main.yml`** file. In the following example we define a directory structure on the local and remote system(s) using the **recursive** directive. The secondary variables **myrepos_remote_directories** and **myrepos_local_directories** are used as placeholders only and could be more descriptive in nature. You will want to define resources in the same order in which you would like them created, for example create containing directories first and so on. For examples on creating the various types of resources allowed by this role the **tests/test.yml** file for this role.
+The contents of **myrepos_resources_on_local** and **myrepos_resources_on_remote** are defined in the dependent roles **`defaults/main.yml`** file. In the following example we define a directory structure on the local and remote system(s) using the **recursive** directive. The secondary variables **myrepos_remote_directories** and **myrepos_local_directories** are used as placeholders only and could be more descriptive in nature. You will want to define resources in the same order in which you would like them created, for example create containing directories first and so on. 
+
+For examples on creating all of the various types of resources allowed by this role see the **tests/vagrant.yml** or **tests/travis.yml** file.
 
 ```shell
 --- 
@@ -159,3 +133,4 @@ The Neuro has adopted the principles of Open Science. We are inspired by the lik
 </p>
 
 * ansible-role-resources generated using [galaxy-role-skeleton](https://github.com/cjsteel/galaxy-role-skeleton)
+* This role was inspired in part by the role created in by [ALG] in 2016, [ansible-role-skel](https://github.com/AttestationLegale/ansible-role-skel)
