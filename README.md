@@ -1,8 +1,6 @@
-# roles/resources/README.md
+# ansible-role-resources
 
 [![Build Status](https://travis-ci.org/cjsteel/ansible-role-resources.svg?branch=master)](https://travis-ci.org/cjsteel/ansible-role-resources)[![Ansible Galaxy](http://img.shields.io/badge/ansible--galaxy-resources-blue.svg)](https://galaxy.ansible.com/cjsteel/resources/)
-
-Manage unix `skeleton`.
 
 ## Description
 
