@@ -13,12 +13,9 @@ resources_deployment_home           : '{{ project_deployment_home }}'
 resources_deployment_resources_home : '{{ project_deployment_home }}\
 /tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}'
 
-# defaults
+# Role defaults
 
-resources_default_file_force : yes
-resources_default_file_mode  : 0700
-resources_default_link_mode  : 0700
-resources_default_link_force : yes
+## local and remote ownership defaults
 
 resources_default_local_owner : '{{ resources_controller_user }}'
 resources_default_local_group : '{{ resources_default_local_owner }}'
@@ -26,41 +23,54 @@ resources_default_local_group : '{{ resources_default_local_owner }}'
 resources_default_remote_owner: '{{ resources_deployment_user }}'
 resources_default_remote_group: '{{ resources_default_remote_owner }}'
 
-# git repo clone defaults
+## Directories
+#
+# Usually passed by dependent role or included in tests/vagrant.yml or tests/travis.yml for testing values.
+
+resources_on_local: []
+resources_on_remote: []
+
+## Clone defaults
 
 resources_default_clone: yes
 resources_default_clone_version: 'HEAD' #'0.0.1 # latest
 
-
-# blockinfile
-
-resources_default_blockinfile_state      : 'present'
-resources_default_blockinfile_marker     : '# <!-- {mark} ANSIBLE MANAGED BLOCK -->'
-resources_default_blockinfile_insertafter: "EOF" # or *regedit*, "<body>"
-
-
-# links
-
-resources_default_force: yes
-
-resources_default_link_force: False
-resources_default_link_mode: '0640'
-resources_default_link_state: 'link'
-
-resources_default_relative_link_mode: '0640'
-
-
-# Help file
-
-resources_acemenu_help_file_template_home: '/templates/bin/acemenu/help/example_aceadmin_helpfile.md.j2'
-
-# Resource URLs
+## Downloads
 
 resources_package_url      : "https://releases.hashicorp.com/vagrant/2.0.1/vagrant_2.0.1_i686.deb"
 #resources_checksum_url     : "https://releases.hashicorp.com/vagrant/2.0.1/ vagrant_2.0.1_SHA256SUMS"
 #resources_checksum_sig_url : "https://releases.hashicorp.com/vagrant/2.0.1/ vagrant_2.0.1_SHA256SUMS.sig"
 
-# Directories
-resources_on_local: []
-resources_on_remote: []
+## File copies
+
+resources_default_file_force : yes
+resources_default_file_mode  : 0700
+
+## File Templates
+
+## File touches
+
+## blockinfile
+
+resources_default_blockinfile_state      : 'present'
+resources_default_blockinfile_marker     : '# <!-- {mark} ANSIBLE MANAGED BLOCK -->'
+resources_default_blockinfile_insertafter: "EOF" # or *regedit*, "<body>"
+
+## Standard and Relative Link defaults
+
+### Links
+
+resources_default_link_state: 'link'
+resources_default_link_mode  : 0700
+resources_default_link_force : yes
+
+### Relative link defaults
+
+resources_default_relative_link_mode: '0640'
+
+# Help file defaults
+
+resources_local_help_template_path: '/templates/bin/acemenu/help/example_aceadmin_helpfile.md.j2'
+
+
 
