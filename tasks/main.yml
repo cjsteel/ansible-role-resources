@@ -86,20 +86,6 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'copy'
 
-# Ensure for touch of local files
-
-- name: "Ensure touch to remote file(s)"
-  become: '{{ resources_controller_user }}'
-  delegate_to: 127.0.0.1
-  file:
-    path: "{{ item.value.path }}"
-    state: "{{ item.value.state }}"
-    owner: "{{ item.value.owner | default(resources_default_local_owner) }}"
-    group: "{{ item.value.group | default(resources_default_local_group) }}"
-    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
-  with_dict: '{{ resources_on_local }}'
-  when: item.value.state is defined and item.value.state == 'touch'
-
 ## Template files to local
 
 - name: "Template files to local"
@@ -114,6 +100,20 @@
   with_dict: '{{ resources_on_local }}'
   when: item.value.state is defined and item.value.state == 'template'
 
+# Ensure for touch of local files
+
+- name: "Ensure touch to remote file(s)"
+  become: '{{ resources_controller_user }}'
+  delegate_to: 127.0.0.1
+  file:
+    path: "{{ item.value.path }}"
+    state: "{{ item.value.state }}"
+    owner: "{{ item.value.owner | default(resources_default_local_owner) }}"
+    group: "{{ item.value.group | default(resources_default_local_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+  with_dict: '{{ resources_on_local }}'
+  when: item.value.state is defined and item.value.state == 'touch'
+
 ## Blockinfile in local files
 
 - name: "Ensure for a block of text in a remote file"
@@ -124,9 +124,9 @@
     owner: "{{ item.value.owner | default(resources_default_local_owner) }}"
     group: "{{ item.value.group | default(resources_default_local_group) }}"
     mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
-    marker: "{{ item.marker | default(skel_default_blockinfile_marker) }}"
+    marker: "{{ item.marker | default(resources_default_blockinfile_marker) }}"
     marker: "{{ item.value.marker | default(resources_default_blockinfile_marker) }}"
-    insertafter: "{{ item.value.insertafter | default(none) }}"
+    insertafter: "{{ item.value.insertafter | default(resources_default_blockinfile_insertafter) }}"
     block: "{{ item.value.block }}"
     state: "{{ item.value.state  | default(resources_default_blockinfile_state) }}"
   with_dict: '{{ resources_on_local }}'
@@ -218,19 +218,6 @@
   with_dict: '{{ resources_on_remote }}'
   when: item.value.state is defined and item.value.state == 'copy'
 
-# Ensure for touch of remote files
-
-- name: "Ensure touch to remote file(s)"
-  become: true
-  file:
-    path: "{{ item.value.path }}"
-    state: "{{ item.value.state }}"
-    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
-    group: "{{ item.value.group | default(resources_default_remote_group) }}"
-    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
-  with_dict: '{{ resources_on_remote }}'
-  when: item.value.state is defined and item.value.state == 'touch'
-
 ## Template files to remote
 
 - name: "Template files to remote"
@@ -243,6 +230,19 @@
     mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
   with_dict: '{{ resources_on_remote }}'
   when: item.value.state is defined and item.value.state == 'template'
+
+## Ensure for touch of remote files
+
+- name: "Ensure touch to remote file(s)"
+  become: true
+  file:
+    path: "{{ item.value.path }}"
+    state: "{{ item.value.state }}"
+    owner: "{{ item.value.owner | default(resources_default_remote_owner) }}"
+    group: "{{ item.value.group | default(resources_default_remote_group) }}"
+    mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
+  with_dict: '{{ resources_on_remote }}'
+  when: item.value.state is defined and item.value.state == 'touch'
 
 ## Blockinfile in remote files
 
