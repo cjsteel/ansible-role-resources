@@ -43,8 +43,10 @@ script:
 
   # Run the role/playbook again, checking to make sure it's idempotent.
   - >
-    ansible-playbook -i tests/inventory tests/travis.yml
-    --connection=local --become
+    ansible-playbook -i inventory travis.yml --connection=local --become
+    | grep -q 'changed=8.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && exit 1)
 
 notifications:
   # notify ansible galaxy of test results
