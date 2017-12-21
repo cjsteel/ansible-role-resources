@@ -7,11 +7,11 @@
     - install
 
 - name: "Debug variable values"
-  include: "{{ fact_role_path }}/tasks/debug.yml"
+  include_tasks: "{{ fact_role_path }}/tasks/debug.yml"
   when: resources_debug
 
 - name: Run any OS specific tasks
-  include: "{{ fact_role_path }}/tasks/{{ ansible_os_family | lower }}.yml"
+  include_tasks: "{{ fact_role_path }}/tasks/{{ ansible_os_family | lower }}.yml"
 
 # Debug remote resources
 
@@ -124,7 +124,6 @@
     owner: "{{ item.value.owner | default(resources_default_local_owner) }}"
     group: "{{ item.value.group | default(resources_default_local_group) }}"
     mode: "{{ item.value.mode | default(resources_default_file_mode) }}"
-    marker: "{{ item.marker | default(resources_default_blockinfile_marker) }}"
     marker: "{{ item.value.marker | default(resources_default_blockinfile_marker) }}"
     insertafter: "{{ item.value.insertafter | default(resources_default_blockinfile_insertafter) }}"
     block: "{{ item.value.block }}"
