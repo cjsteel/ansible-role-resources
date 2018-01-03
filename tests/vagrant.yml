@@ -2,7 +2,6 @@
 
 - hosts: all
   become: true
-  become_user: 'ubuntu'
   gather_facts: false
   pre_tasks:
 
@@ -17,9 +16,8 @@
     - debug: var=fact_role_path
 
     - name: "Ensure that our target has python2.x for Ansible gather facts as some Ubuntu 16.04 vagrant boxes do not)"
-      become: true
-      become_user: 'root'
-      raw: bash -c "test -e /usr/bin/python || (apt update && apt install python-minimal)"
+      become_user: root
+      raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python-minimal)"
       register: output
       changed_when:
        - output.stdout != ""
