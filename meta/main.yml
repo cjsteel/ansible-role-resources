@@ -5,23 +5,17 @@
 
 galaxy_info:
   author: 'Christopher Steel'
-  description: 'resources is used to...'
+  description: 'ansible-role-resources is an Ansible role that is used as a dependency. The role ensures for resources such as directories, clones, files, links and url downloads on the local (controller) system as well as remote systems.'
   company: 'McGill Centre for Integrative Neuroscience'
   license: MIT
-  min_ansible_version: '1.7.1'
+  min_ansible_version: '2.4.2'
 
   platforms:
     - name: Ubuntu
       versions:
         - xenial
-#    - name: Debian
-#      versions:
-#        - wheezy
-#        - jessie
 
   galaxy_tags:
-    - mcin
     - resources
-    - package
-    # NOTE: A tag is limited to a single word comprised of
-    # alphanumeric characters. Maximum 20 tags per role.
+    - MCIN
+    - MNI
