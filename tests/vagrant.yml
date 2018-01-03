@@ -1,9 +1,9 @@
 --- # roles/resources/tests/vagrant.yml
 
 - hosts: all
-  remote_user: ubuntu
-  become: false
-  gather_facts: true
+  become: true
+  become_user: 'ubuntu'
+  gather_facts: false
   pre_tasks:
 
 
@@ -17,7 +17,9 @@
     - debug: var=fact_role_path
 
     - name: "Ensure that our target has python2.x for Ansible gather facts as some Ubuntu 16.04 vagrant boxes do not)"
-      raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python-minimal)"
+      become: true
+      become_user: 'root'
+      raw: bash -c "test -e /usr/bin/python || (apt update && apt install python-minimal)"
       register: output
       changed_when:
        - output.stdout != ""
@@ -105,7 +107,6 @@
         resources_local_clone_example:
 
           clone : yes
-          become: true
           repo  : 'https://github.com/csteel/myrepos.git'
           dest  : '{{ resources_controller_resources_root }}/myrepos'
           update: yes
