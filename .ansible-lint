@@ -1,9 +1,4 @@
-# resources/ROADMAP.md
-
-## To do
-
-.ansible-lint
-
+skip_list:
   - '204'  # [204] Lines should be no longer than 160 chars
   - '502'  # [502] All tasks should be named
   - '702'  # [702] Tags must contain lowercase letters and digits only, invalid: 'MNI'
