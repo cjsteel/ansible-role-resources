@@ -1,0 +1,23 @@
+---
+# ATTENTION - boilerplate used for updating THIS ROLES molecule vagrant scenario files.
+#
+#
+
+- name: Converge
+  hosts: all
+  vars:
+    - virtualbox_deployment_users_home: /home/vagrant
+    - virtualbox_testing_provider: vagrant
+    - providers_short_name: resources
+    - providers_galaxy_name: cjsteel.resources
+
+    - providers_project_directory: "{{ lookup('env', 'PWD') }}"
+    # files to be ubpdated should be set to be true
+    - providers_update_lxd_install_rst: false   # updates this roles molecule scenario files
+    - providers_update_lxd_molecule_yml: false  # updates this roles molecule scenario files
+    - providers_update_lxd_playbook_yml: false  # updates this roles molecule scenario files
+
+  roles:
+    - role: cjsteel.providers
+
+- import_playbook: playbook2.yml

@@ -1,0 +1,5 @@
+---
+# ansible requirements.yml
+
+- src: https://github.com/geerlingguy/ansible-role-git.git
+  name: geerlingguy.git

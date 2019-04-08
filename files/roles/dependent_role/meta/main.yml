@@ -1,5 +1,0 @@
-dependencies:
-
-  - role: resources
-    resources_on_local : '{{ dependent_role_resources_on_local }}'
-    resources_on_remote: '{{ dependent_role_resources_on_remote }}'

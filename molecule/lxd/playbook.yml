@@ -1,0 +1,29 @@
+---
+# molecule/lxd/playbook.yml
+#
+# boilerplate used to update this roles molecule lxd scenario files.
+#
+#
+- name: Converge updated provider files
+  hosts: all
+  vars:
+
+    providers_short_name: resources
+    providers_galaxy_name: cjsteel.resources
+    providers_project_directory: "{{ lookup('env', 'PWD') }}"
+    # files to be ubpdated should be set to be true
+    # updating the lxd playbook file will overwrite this file
+    providers_update_all_files: false         # !!update all scenario files!!
+    providers_update_lxd_all_files: false     # !update all updatable lxd scenario files!
+    providers_update_lxd_install_rst: false   # updates this molecule scenario file
+    providers_update_lxd_molecule_yml: false  # updates this molecule scenario file
+    providers_update_lxd_playbook_yml: false  # updates this molecule scenario file
+    providers_update_lxd_playbook2_yml: false  # updates this molecule scenario file
+
+  pre_tasks:
+    - debug:
+        var: providers_project_directory
+  roles:
+    - role: cjsteel.providers
+
+- import_playbook: playbook2.yml

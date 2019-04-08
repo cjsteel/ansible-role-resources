@@ -5,22 +5,12 @@
 
 # ensure for requirements
 
-## apt packages
-
-#- name: "update apt cache"
-#  become: true
-#  apt:
-#    update_cache: yes
-#    cache_valid_time: 3600
-#  tags: [ 'packages' ]
-
 - name: "Install git clone reqirements"
   become: true
-  become_user: root
   apt:
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
-    name : '{{ item }}'
+    name: '{{ item }}'
     state: 'present'
   with_items:
     - git

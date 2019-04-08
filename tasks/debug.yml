@@ -1,4 +1,5 @@
---- # roles/resources/tasks/debug.yml
+---
+# roles/resources/tasks/debug.yml
 
 
 - debug: var=resources_controller_user
@@ -9,18 +10,13 @@
 - debug: var=resources_deployment_home
 - debug: var=resources_deployment_resources_home
 
-#- debug: var=resources_major
-#- debug: var=resources_moderate_revision
-#- debug: var=resources_minor_revision
-#- debug: var=resources_build
-
-## Package #
+##  Package #
 
 - debug: var=resources_package_state
 - debug: var=resources_package_version
 - debug: var=resources_package_filename
 
-# Resources
+#  Resources
 
 - debug: var=resources_package_url
 - debug: var=resources_checksum_url
@@ -29,7 +25,7 @@
 - debug: var=resources_controller_resources_dir
 - debug: var=resources_deployment_resources_dir
 
-# Directories
+#  Directories
 
 - debug: var=resources_ensure_dirs_on_remote
 - debug: var=resources_ensure_dirs_on_local

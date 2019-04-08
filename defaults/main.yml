@@ -1,50 +1,62 @@
 ---
 # roles/resources/defaults/main.yml
 
-resources_debug : false
-
-resources_controller_user           : '{{ project_controller_user }}'
-resources_controller_home           : '{{ project_controller_home }}'
-resources_controller_resources_home : '{{ project_controller_home }}\
-/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}'
-
-resources_deployment_user           : '{{ project_deployment_user }}'
-resources_deployment_home           : '{{ project_deployment_home }}'
-resources_deployment_resources_home : '{{ project_deployment_home }}\
-/tests/sw/{{ ansible_distribution| lower }}/{{ ansible_distribution_version }}'
+resources_debug: false
 
 # Role defaults
 
 ## local and remote ownership defaults
 
-resources_default_local_owner : '{{ resources_controller_user }}'
-resources_default_local_group : '{{ resources_default_local_owner }}'
+resources_default_local_user: '{{ fact_controller_user }}'
+resources_default_local_group: '{{ resources_default_local_user }}'
+resources_default_local_home: '{{ fact_controller_home }}'
 
-resources_default_remote_owner: '{{ resources_deployment_user }}'
-resources_default_remote_group: '{{ resources_default_remote_owner }}'
+resources_default_remote_user: '{{ resources_deployment_user }}'
+resources_default_remote_group: '{{ resources_default_remote_user }}'
+resources_default_remote_home: '{{ resources_deployment_home }}'
 
-## Directories
+## Usage and Testing Example:
 #
 # Usually passed by dependent role or included in tests/vagrant.yml or tests/travis.yml for testing values.
 
-resources_on_local: []
-resources_on_remote: []
+resources_test_directory: '{{ resources_controller_home }}/resources_test'
+resources_on_local:
+
+  resources_local_directories:
+
+    state: 'directory'
+    path: '{{ resources_default_local_home }}/resources_role_local_directory_test'
+    owner: '{{ resources_default_local_user }}'
+    group: '{{ resources_default_local_group }}'
+    mode: '0755'
+    recursive: true
+
+resources_on_remote:
+
+  resources_remote_directories:
+
+    state: 'directory'
+    path: '{{ resources_default_remote_home }}/resources_role_remote_directory_test'
+    owner: '{{ resources_default_remote_user }}'
+    group: '{{ resources_default_remote_group }}'
+    mode: '0755'
+    recursive: true
 
 ## Clone defaults
 
-resources_default_clone: yes
-resources_default_clone_version: 'HEAD' #'0.0.1 # latest
+resources_default_clone: true
+resources_default_clone_version: 'HEAD'  # '0.0.1 # latest
 
 ## Downloads
 
-resources_package_url      : "https://releases.hashicorp.com/vagrant/2.0.1/vagrant_2.0.1_i686.deb"
-#resources_checksum_url     : "https://releases.hashicorp.com/vagrant/2.0.1/ vagrant_2.0.1_SHA256SUMS"
-#resources_checksum_sig_url : "https://releases.hashicorp.com/vagrant/2.0.1/ vagrant_2.0.1_SHA256SUMS.sig"
+resources_package_url: "https://releases.hashicorp.com/vagrant/2.0.1/vagrant_2.0.1_i686.deb"
+# resources_checksum_url: "https://releases.hashicorp.com/vagrant/2.0.1/ vagrant_2.0.1_SHA256SUMS"
+# resources_checksum_sig_url: "https://releases.hashicorp.com/vagrant/2.0.1/ vagrant_2.0.1_SHA256SUMS.sig"
 
 ## File copies
 
-resources_default_file_force : yes
-resources_default_file_mode  : 0700
+resources_default_file_force: true
+resources_default_file_mode: 0700
 
 ## File Templates
 
@@ -52,17 +64,17 @@ resources_default_file_mode  : 0700
 
 ## blockinfile
 
-resources_default_blockinfile_state      : 'present'
-resources_default_blockinfile_marker     : '# <!-- {mark} ANSIBLE MANAGED BLOCK -->'
-resources_default_blockinfile_insertafter: "EOF" # or *regedit*, "<body>"
+resources_default_blockinfile_state: 'present'
+resources_default_blockinfile_marker: '# <!-- {mark} ANSIBLE MANAGED BLOCK -->'
+resources_default_blockinfile_insertafter: "EOF"  # or *regedit*, "<body>"
 
 ## Standard and Relative Link defaults
 
 ### Links
 
 resources_default_link_state: 'link'
-resources_default_link_mode  : 0700
-resources_default_link_force : yes
+resources_default_link_mode: 0700
+resources_default_link_force: true
 
 ### Relative link defaults
 
@@ -71,6 +83,3 @@ resources_default_relative_link_mode: '0640'
 # Help file defaults
 
 resources_local_help_template_path: '/templates/bin/acemenu/help/example_aceadmin_helpfile.md.j2'
-
-
-
